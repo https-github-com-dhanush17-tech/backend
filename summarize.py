@@ -1,9 +1,11 @@
 import openai
+import json
 
-openai.api_key = "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"
 
-
-def get_summary(paragraph: str):    
+def get_summary(paragraph: str):
+    with open('config.json') as json_file:
+        data = json.load(json_file)
+    openai.api_key = data['openai']
     paragraph = paragraph.strip("\n")
     return openai.Completion.create(
         engine="davinci",
