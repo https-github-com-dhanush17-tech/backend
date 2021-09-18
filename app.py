@@ -34,36 +34,27 @@ def importImages():  # put application's code here
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        # print(file.filename)
-        # print(file.headers)
-        # and allowed_file(file.filename)
         if file:
             filename = secure_filename(file.filename)
-            # np.save(UPLOAD_FOLDER/"test.npy", np.zeros([5, 5]))
             print(UPLOAD_FOLDER)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename)))
-
-
-            # file.save(UPLOAD_FOLDER.resolve(), filename)
-            name = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             print(name)
-            img = cv2.imread(name)
-            # img = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename),mode='RGB')
 
-            # img = np.fromfile(file)
-            # img = np.array(file)
-            print("Here")
-            print(img)
-            print(type(img))
-            print("Shape:", img.shape)
-            cv2.imshow("image", img)
-            cv2.waitKey(-1)
+            cv2.namedWindow("output", cv2.WINDOW_NORMAL)    # Create window with freedom of dimensions
+            img = cv2.imread(name)                    # Read image
+            print(img.shape[0])
+            imS = cv2.resize(img, (img.shape[0], img.shape[1]))                # Resize image
+            cv2.imshow("output", imS)
+
+            # img = cv2.imread(name)
+            # print("Here")
+            # print(img)
+            # print(type(img))
+            # print("Shape:", img.shape)
+            # cv2.imshow("image", img)
+            # cv2.waitKey(-1)
             return parseImages(img)
-            #f = request.files["images"]
-            # file = request.files['file']
-            # f = request.args['images']
-            # return parseImages(f)
     return "Error1"
 
 
