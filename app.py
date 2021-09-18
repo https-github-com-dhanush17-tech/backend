@@ -7,6 +7,7 @@ import numpy as np
 from flask import Flask
 import summarize
 
+
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = Path('./tmp/')
 UPLOAD_FOLDER.mkdir(exist_ok=True)
@@ -51,9 +52,43 @@ def importImages():  # put application's code here
             cv2.namedWindow("output", cv2.WINDOW_NORMAL)
             cv2.imshow("output", imS)
             cv2.waitKey(-1)
-            
+
             return parseImages(imS)
     return "Error1"
+
+
+@app.route('/importAudio', methods=['POST'])
+def importAudio():  # put application's code here
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            img = cv2.imread(name)# Read image
+
+            #delete file
+            # UPLOAD_FOLDER.unlink(missing_ok=True)
+
+            imS = cv2.resize(img, (img.shape[0], img.shape[1]))# Resize image
+
+            # Create window with freedom of dimensions
+            cv2.namedWindow("output", cv2.WINDOW_NORMAL)
+            cv2.imshow("output", imS)
+            cv2.waitKey(-1)
+
+            return parseImages(imS)
+    return "Error1"
+
 
 def paragraph_to_text():
     paragraph = input("Input text: ")

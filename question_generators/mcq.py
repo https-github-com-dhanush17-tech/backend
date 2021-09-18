@@ -11,5 +11,5 @@ def mcq(sentence: str):
         "input_text": sentence
     }
     output = qg.predict_mcq(payload)
-    pprint (output)
+    print (output)
     return output
