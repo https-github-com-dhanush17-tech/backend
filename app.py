@@ -6,9 +6,13 @@ from pathlib import Path
 import numpy as np
 from flask import Flask
 import summarize
-
+from speech import parseAudio
+import speech_recognition as speech_recog
+rec = speech_recog.Recognizer()
 
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS2 = {'wav'}
+
 UPLOAD_FOLDER = Path('./tmp/')
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 print(UPLOAD_FOLDER.resolve())
@@ -23,6 +27,10 @@ def hello_world():  # put application's code here
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def allowed_file2(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS2
 
 @app.route('/importImages', methods=['POST'])
 def importImages():  # put application's code here
@@ -74,19 +82,18 @@ def importAudio():  # put application's code here
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            img = cv2.imread(name)# Read image
-
-            #delete file
+            with speech_recog.WavFile("test.wav") as source:              # use "test.wav" as the audio source
+                audio = rec.record(source)                        # extract audio data from the file
+                AudioData = parseAudio(audio)
+                return AudioData["confidence"]
+        #delete file
             # UPLOAD_FOLDER.unlink(missing_ok=True)
-
-            imS = cv2.resize(img, (img.shape[0], img.shape[1]))# Resize image
 
             # Create window with freedom of dimensions
             # cv2.namedWindow("output", cv2.WINDOW_NORMAL)
             # cv2.imshow("output", imS)
             # cv2.waitKey(-1)
 
-            return parseImages(imS)
     return "Error1"
 
 
