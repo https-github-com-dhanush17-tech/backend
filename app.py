@@ -4,6 +4,8 @@ import os
 import cv2
 from pathlib import Path
 import numpy as np
+from flask import Flask
+import summarize
 
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = Path('./tmp/')
@@ -50,6 +52,11 @@ def importImages():  # put application's code here
             return parseImages(img)
     return "Error1"
 
+def paragraph_to_text():
+    paragraph = input("Input text: ")
+    summary = summarize.get_summary(paragraph)
+    sentences = summarize.summary_to_sentences(summary)
+    print(str(sentences))
 
 def parseImages(input):
     return "{a: bruh}"
