@@ -1,3 +1,4 @@
+# TODO use confidence for each word/letter if possible
 from pathlib import Path
 
 import cv2
