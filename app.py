@@ -38,18 +38,21 @@ def importImages():  # put application's code here
             return redirect(request.url)
         if file:
             filename = secure_filename(file.filename)
-            print(UPLOAD_FOLDER)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            print(name)
+            img = cv2.imread(name)# Read image
 
-            cv2.namedWindow("output", cv2.WINDOW_NORMAL)    # Create window with freedom of dimensions
-            img = cv2.imread(name)                    # Read image
-            print(img.shape[0])
-            imS = cv2.resize(img, (img.shape[0], img.shape[1]))                # Resize image
+            #delete file
+            # UPLOAD_FOLDER.unlink(missing_ok=True)
+
+            imS = cv2.resize(img, (img.shape[0], img.shape[1]))# Resize image
+
+            # Create window with freedom of dimensions
+            cv2.namedWindow("output", cv2.WINDOW_NORMAL)
             cv2.imshow("output", imS)
-
-            return parseImages(img)
+            cv2.waitKey(-1)
+            
+            return parseImages(imS)
     return "Error1"
 
 def paragraph_to_text():
