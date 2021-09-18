@@ -4,13 +4,16 @@ from pathlib import Path
 import cv2
 import pytesseract
 import numpy as np
+from autocorrect import Speller
 
 from backend.ocr.preprocess import PreprocessImage
 
 
 class OCR:
-    def __init__(self):
+    def __init__(self, conf_thresh=0.0):
         self.tesseract_config = r"--oem 2 --psm 3"
+        self.conf_thresh = conf_thresh
+        self.spell_cleanup = Speller(only_replacements=False)
 
     def get_text(self, img):
         preprocessImage = PreprocessImage(img)
@@ -20,7 +23,25 @@ class OCR:
             processed_img, config=self.tesseract_config
         )
 
-        return ocr_output
+        ocr_data = pytesseract.image_to_data(
+            processed_img,
+            config=self.tesseract_config,
+            output_type=pytesseract.Output.DICT,
+        )
+
+        ocr_conf_output = ""
+        for conf, word in zip(ocr_data["conf"], ocr_data["text"]):
+            if int(conf) >= self.conf_thresh * 100:
+                corrected = self.spell_cleanup(word)
+                if corrected != word and corrected != "":
+                    ocr_conf_output += corrected
+                else:
+                    ocr_conf_output += word
+                ocr_conf_output += " "
+            if int(conf) == -1:
+                ocr_conf_output += "\n"
+
+        return ocr_conf_output
 
 
 if __name__ == "__main__":
