@@ -47,13 +47,6 @@ def importImages():  # put application's code here
             imS = cv2.resize(img, (img.shape[0], img.shape[1]))                # Resize image
             cv2.imshow("output", imS)
 
-            # img = cv2.imread(name)
-            # print("Here")
-            # print(img)
-            # print(type(img))
-            # print("Shape:", img.shape)
-            # cv2.imshow("image", img)
-            # cv2.waitKey(-1)
             return parseImages(img)
     return "Error1"
 
