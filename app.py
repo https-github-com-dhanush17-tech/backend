@@ -9,9 +9,15 @@ import summarize
 
 from backend.ocr.ocr import OCR
 from question_generators.mcq import mcq
+from speech import parseAudio
+import speech_recognition as speech_recog
+rec = speech_recog.Recognizer()
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 UPLOAD_FOLDER = Path("./tmp/")
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS2 = {'wav'}
+
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 print(UPLOAD_FOLDER.resolve())
 
@@ -21,7 +27,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/")
 def hello_world():  # put application's code here
-    return "Ur mom"
+    return "Ur mum"
 
 
 def allowed_file(filename):
@@ -29,6 +35,11 @@ def allowed_file(filename):
 
 
 @app.route("/importImages", methods=["POST"])
+def allowed_file2(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS2
+
+@app.route('/importImages', methods=['POST'])
 def importImages():  # put application's code here
     if request.method == "POST":
         # check if the post request has the file part
@@ -87,6 +98,13 @@ def importAudio():  # put application's code here
             img = cv2.imread(name)  # Read image
 
             # delete file
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            with speech_recog.WavFile("test.wav") as source:              # use "test.wav" as the audio source
+                audio = rec.record(source)                        # extract audio data from the file
+                AudioData = parseAudio(audio)
+                return AudioData["confidence"]
+        #delete file
             # UPLOAD_FOLDER.unlink(missing_ok=True)
 
             imS = cv2.resize(img, (img.shape[0], img.shape[1]))  # Resize image
