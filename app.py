@@ -82,9 +82,9 @@ def importAudio():  # put application's code here
             imS = cv2.resize(img, (img.shape[0], img.shape[1]))# Resize image
 
             # Create window with freedom of dimensions
-            cv2.namedWindow("output", cv2.WINDOW_NORMAL)
-            cv2.imshow("output", imS)
-            cv2.waitKey(-1)
+            # cv2.namedWindow("output", cv2.WINDOW_NORMAL)
+            # cv2.imshow("output", imS)
+            # cv2.waitKey(-1)
 
             return parseImages(imS)
     return "Error1"
