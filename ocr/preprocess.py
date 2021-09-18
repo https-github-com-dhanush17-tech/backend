@@ -7,11 +7,14 @@ import numpy as np
 
 class PreprocessImage:
     def __init__(self, img, res_scale=0.25):
+        self.org_img = img.copy()
+
         res = (
             int(img.shape[1] * res_scale),
             int(img.shape[0] * res_scale),
         )
 
+        self.res_scale = res_scale
         self.res = res
         self.img = cv2.resize(img, self.res)
 
@@ -55,9 +58,12 @@ class PreprocessImage:
             perimeter = cv2.arcLength(rectangle_contour, True)
             rectangle = cv2.approxPolyDP(rectangle_contour, 0.10 * perimeter, True)
 
-            dewarped = self.unwarp_rect(img, rectangle)
+            dewarped = self.unwarp_rect(self.org_img, rectangle)
             print("rectangle:", rectangle)
-            cv2.imshow("dwarmped", dewarped)
+            # cv2.imshow("dwarmped", dewarped)
+            return self.process_for_ocr(dewarped)
+        else:
+            return self.process_for_ocr(self.org_img)
 
         drawing = self.img.copy()
         cv2.drawContours(drawing, contours, -1, (0, 255, 0), 1)
@@ -93,12 +99,25 @@ class PreprocessImage:
         # opened = self.opening(thresh)
         # canny = self.canny(opened)
 
-        cv2.imshow("blurred", blurred)
+        # cv2.imshow("blurred", blurred)
         # cv2.imshow("smoothed", smoothed)
-        cv2.imshow("thresh", thresh)
-        cv2.imshow("canny", canny)
+        # cv2.imshow("thresh", thresh)
+        # cv2.imshow("canny", canny)
 
         return drawing
+
+    def process_for_ocr(self, img):
+        cv2.normalize(img, img, 0, 255, cv2.NORM_MINMAX)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.medianBlur(gray, 3)
+
+        kernel = np.ones((3, 3), np.uint8)
+        # gray = cv2.dilate(gray, kernel, iterations=1)
+        gray = cv2.erode(gray, kernel, iterations=1)
+        # gray = cv2.morphologyEx(blurred, cv2.MORPH_OPEN, kernel=kernel, iterations=1)
+        ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
+        ret, thresh = cv2.threshold(gray, int(ret + ret * 0.22), 255, cv2.THRESH_BINARY)
+        return thresh
 
     def process_color(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -209,19 +228,20 @@ class PreprocessImage:
 
     def unwarp_rect(self, img, rect_points):
         rect_points = self.sort_rect_points(rect_points).astype(np.float32)
+        rect_points /= self.res_scale
         corner_points = np.array(
             [
                 [0, 0],
-                [self.img.shape[1], 0],
-                [0, self.img.shape[0]],
-                [self.img.shape[1], self.img.shape[0]]
+                [img.shape[1], 0],
+                [0, img.shape[0]],
+                [img.shape[1], img.shape[0]]
             ],
             dtype=np.float32
         )
 
         trans_mat = cv2.getPerspectiveTransform(rect_points, corner_points)
         return cv2.warpPerspective(
-            img, trans_mat, (self.img.shape[1], self.img.shape[0])
+            img, trans_mat, (img.shape[1], img.shape[0])
         )
 
 
