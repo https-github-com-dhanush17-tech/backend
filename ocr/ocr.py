@@ -6,7 +6,7 @@ import pytesseract
 import numpy as np
 from autocorrect import Speller
 
-from backend.ocr.preprocess import PreprocessImage
+from .preprocess import PreprocessImage
 
 
 class OCR:
@@ -49,15 +49,15 @@ if __name__ == "__main__":
     img_path = dataset_dir / "42.jpg"
     img = cv2.imread(str(img_path))
 
-    print("imgs: ", list(dataset_dir.iterdir()))
+    # print("imgs: ", list(dataset_dir.iterdir()))
     # img_path = dataset_dir / "preprocessed-receipt.jpg"
-    print("img:", img_path)
-    print("img res:", img.shape)
+    # print("img:", img_path)
+    # print("img res:", img.shape)
 
     ocr = OCR()
     ocr_output = ocr.get_text(img)
 
-    print("===============\n\n\nText detected:\n", ocr_output)
+    # print("===============\n\n\nText detected:\n", ocr_output)
     cv2.imshow(
         "img", cv2.resize(img, (int(img.shape[1] * 0.25), int(img.shape[0] * 0.25)))
     )
