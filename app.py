@@ -10,7 +10,7 @@ import numpy as np
 from flask import Flask
 
 from ocr.ocr import OCR
-from question_generators.mcq import mcq
+from question_generators.question_gen import QuestionGen
 from speech import parseAudio
 import speech_recognition as speech_recog
 rec = speech_recog.Recognizer()
@@ -56,13 +56,46 @@ def import_images():  # put application's code here
             ocr_output = ocr.get_text(img)
             logging.debug("ocr output:", ocr_output)
 
-            mcq_output = mcq(ocr_output)
-            logging.debug("MCQ Output:", mcq_output)
+            question_gen = QuestionGen()
+            question_output = question_gen.mcq(ocr_output)
+            logging.debug("MCQ Output:", question_output)
 
-            return mcq_output
+            return question_output
 
     return "Error1"
 
+@app.route('/importAudio', methods=['POST'])
+def import_audio():  # put application's code here
+    if request.method == "POST":
+        # check if the post request has the file part
+        if "file" not in request.files:
+            flash("No file part")
+            return redirect(request.url)
+        file = request.files["file"]
+        # If the user does not select a file, the browser submits an empty file without a filename.
+        if file.filename == "":
+            flash("No selected file")
+            return redirect(request.url)
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            name = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+            with speech_recog.WavFile(name) as f:
+                audio = rec.record(f)
+                audio_data = parseAudio(audio)
+                logging.debug(audio_data["confidence"])
+
+            # delete file
+            shutil.rmtree(UPLOAD_FOLDER)
+
+            # question_gen = QuestionGen()
+            # question_output = question_gen.mcq(audio_transcript)
+            # logging.debug("MCQ Output:", question_output)
+            #
+            # return question_output
+
+    return "Error1"
 
 # @app.route("/importAudio", methods=["POST"])
 # def import_audio():  # put application's code here
@@ -112,4 +145,4 @@ def import_images():  # put application's code here
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80, processes=3, threaded=False)
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
