@@ -16,6 +16,7 @@ import speech_recognition as speech_recog
 
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 UPLOAD_FOLDER = Path("./tmp/")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
@@ -144,6 +145,6 @@ def import_audio():  # put application's code here
 #
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80, processes=3, threaded=False, debug=True)
-    app.logger.basicConfig(level=app.logger.DEBUG)
-    # logging.basicConfig(level=app.logger.DEBUG)
+    app.run(host="0.0.0.0", port=80)
+    # app.run(host="0.0.0.0", port=80, processes=3, threaded=False, debug=True)
+
