@@ -17,21 +17,19 @@ class OCR:
         self.conf_thresh = conf_thresh
         self.spell_cleanup = Speller(only_replacements=False)
 
-        current_app.logger.warning("OCR INIT WARNING!!")
-
     def get_text(self, img):
-        logging.info("Preprocessing Image")
+        current_app.logger.info("Preprocessing Image")
         preprocessImage = PreprocessImage(img)
         processed_img = preprocessImage.preprocess_img()
 
-        logging.info("Running OCR on Image")
+        current_app.logger.info("Running OCR on Image")
         ocr_data = pytesseract.image_to_data(
             processed_img,
             config=self.tesseract_config,
             output_type=pytesseract.Output.DICT,
         )
 
-        logging.info("Running Clean-up on OCR")
+        current_app.logger.info("Running Clean-up on OCR")
         ocr_conf_output = ""
         for conf, word in zip(ocr_data["conf"], ocr_data["text"]):
             if int(conf) >= self.conf_thresh * 100:

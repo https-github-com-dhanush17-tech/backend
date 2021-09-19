@@ -15,7 +15,6 @@ class QuestionGen:
             "input_text": sentence
         }
         output = question_func(payload)
-        logging.debug(output)
         current_app.logger.debug(output)
         return output
 

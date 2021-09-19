@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import logging
 
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, current_app
 from werkzeug.utils import secure_filename
 import cv2
 import numpy as np
@@ -54,11 +54,11 @@ def import_images():  # put application's code here
 
             ocr = OCR()
             ocr_output = ocr.get_text(img)
-            logging.debug("ocr output:", ocr_output)
+            current_app.logger.debug("ocr output:", ocr_output)
 
             question_gen = QuestionGen()
             question_output = question_gen.mcq(ocr_output)
-            logging.debug("MCQ Output:", question_output)
+            current_app.logger.debug("MCQ Output:", question_output)
 
             return question_output
 
@@ -84,14 +84,14 @@ def import_audio():  # put application's code here
             with speech_recog.WavFile(name) as f:
                 audio = rec.record(f)
                 audio_data = parseAudio(audio)
-                logging.debug(audio_data["confidence"])
+                current_app.logger.debug(audio_data["confidence"])
 
             # delete file
-            shutil.rmtree(UPLOAD_FOLDER)
+            # shutil.rmtree(UPLOAD_FOLDER)
 
             # question_gen = QuestionGen()
             # question_output = question_gen.mcq(audio_transcript)
-            # logging.debug("MCQ Output:", question_output)
+            # current_app.logger.debug("MCQ Output:", question_output)
             #
             # return question_output
 
@@ -145,4 +145,4 @@ def import_audio():  # put application's code here
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80, processes=3, threaded=False, debug=True)
-    logging.basicConfig(level=logging.DEBUG)
+    current_app.logger.basicConfig(level=current_app.logger.DEBUG)
