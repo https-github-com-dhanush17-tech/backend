@@ -35,7 +35,7 @@ class PreprocessImage:
         sigma = 0.33
         lower_thresh = int(max(0, (1.0 - sigma) * median))
         upper_thresh = int(min(255, (1.0 + sigma) * median))
-        print("canny thresh:", lower_thresh, upper_thresh)
+        logging.debug("canny thresh:", lower_thresh, upper_thresh)
         canny = cv2.Canny(thresh, lower_thresh, upper_thresh)
 
         # canny = self.dilate(canny)
@@ -60,7 +60,7 @@ class PreprocessImage:
             rectangle = cv2.approxPolyDP(rectangle_contour, 0.10 * perimeter, True)
 
             dewarped = self.unwarp_rect(self.org_img, rectangle)
-            print("rectangle:", rectangle)
+            logging.debug("rectangle:", rectangle)
             return self.process_for_ocr(dewarped)
         else:
             return self.process_for_ocr(self.org_img)
@@ -132,7 +132,7 @@ class PreprocessImage:
     def filter_contours_area(self, contours, area_thresh, keep_big=True):
         filtered = []
         for contour in contours:
-            print("contour area:", cv2.contourArea(contour))
+            logging.debug("contour area:", cv2.contourArea(contour))
             if keep_big and cv2.contourArea(contour) > area_thresh:
                 filtered.append(contour)
             elif not keep_big and cv2.contourArea(contour) < area_thresh:
@@ -202,10 +202,10 @@ if __name__ == "__main__":
         img_path = dataset_dir / "ex-0.jpg"
         img = cv2.imread(str(img_path))
 
-    # print("imgs: ", list(dataset_dir.iterdir()))
+    # logging.debug("imgs: ", list(dataset_dir.iterdir()))
     # img_path = dataset_dir / "textbook-white-background.jpg"
     # img = cv2.imread(str(img_path))
-    print("img loaded:", img)
+    # logging.debug("img loaded:", img)
 
     # preprocessImage = PreprocessImage(img, disp_res_scale=0.25)
     while True:
@@ -214,7 +214,7 @@ if __name__ == "__main__":
             if not ret:
                 break
 
-        print("org res", img.shape)
+        logging.debug("org res", img.shape)
 
         preprocessImage = PreprocessImage(img, res_scale=0.25)
         processed_img = preprocessImage.preprocess_img()
