@@ -1,5 +1,6 @@
 import logging
 
+from flask import current_app
 import nltk
 from Questgen import main
 
@@ -15,6 +16,7 @@ class QuestionGen:
         }
         output = question_func(payload)
         logging.debug(output)
+        current_app.logger.debug(output)
         return output
 
     def mcq(self, sentence):

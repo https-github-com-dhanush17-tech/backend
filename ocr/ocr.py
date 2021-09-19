@@ -1,6 +1,8 @@
 from pathlib import Path
 import logging
 
+from flask import current_app
+
 import cv2
 import pytesseract
 import numpy as np
@@ -14,6 +16,8 @@ class OCR:
         self.tesseract_config = r"--oem 2 --psm 3"
         self.conf_thresh = conf_thresh
         self.spell_cleanup = Speller(only_replacements=False)
+
+        current_app.logger.warning("OCR INIT WARNING!!")
 
     def get_text(self, img):
         logging.info("Preprocessing Image")

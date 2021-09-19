@@ -19,8 +19,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = Path("./tmp/")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
-res = UPLOAD_FOLDER.resolve()
-app.logger.warning("TEST CRIT")
+app.logger.debug(f"Create tmp folder at: {UPLOAD_FOLDER.resolve()}")
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -147,4 +146,3 @@ def import_audio():  # put application's code here
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80, processes=3, threaded=False, debug=True)
     logging.basicConfig(level=logging.DEBUG)
-    # app.logger.debug("HELLLOOO")
