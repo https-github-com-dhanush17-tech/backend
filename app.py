@@ -50,7 +50,7 @@ def import_images():  # put application's code here
             img = cv2.imread(name)  # Read image
 
             # delete file
-            shutil.rmtree(UPLOAD_FOLDER)
+            # shutil.rmtree(UPLOAD_FOLDER)
 
             ocr = OCR()
             ocr_output = ocr.get_text(img)
