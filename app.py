@@ -20,7 +20,8 @@ rec = speech_recog.Recognizer()
 UPLOAD_FOLDER = Path("./tmp/")
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
-logging.debug(UPLOAD_FOLDER.resolve())
+res = UPLOAD_FOLDER.resolve()
+logging.debug(res)
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
