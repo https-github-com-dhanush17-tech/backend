@@ -145,5 +145,5 @@ def import_audio():  # put application's code here
 #
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80, processes=3, threaded=False)
+    app.run(host="0.0.0.0", port=80, processes=3, threaded=False, debug=True)
     logging.basicConfig(level=logging.DEBUG)
