@@ -1,5 +1,8 @@
 # Don't add API keys
 config.json
+*.tar.gz
+s2v_old/
+tmp/
 
 
 # Byte-compiled / optimized / DLL files
