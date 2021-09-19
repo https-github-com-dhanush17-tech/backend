@@ -42,6 +42,8 @@ class OCR:
             if int(conf) == -1:
                 ocr_conf_output += "\n"
 
+        current_app.logger.info("Finished Clean-up on OCR")
+
         return ocr_conf_output
 
 
