@@ -1,6 +1,6 @@
 import speech_recognition as speech_recog
 import sys
-from .question_generators.mcq import mcq
+# from .question_generators.mcq import mcq
 
 rec = speech_recog.Recognizer()
 # #read duration from the arguments

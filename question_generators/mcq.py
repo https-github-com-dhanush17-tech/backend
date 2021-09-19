@@ -2,7 +2,7 @@ from pprint import pprint
 import nltk
 
 nltk.download('stopwords')
-from Questge import main
+from Questgen import main
 
 
 def mcq(sentence: str):

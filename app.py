@@ -17,7 +17,7 @@ rec = speech_recog.Recognizer()
 UPLOAD_FOLDER = Path("./tmp/")
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
-print(UPLOAD_FOLDER.resolve())
+# print(UPLOAD_FOLDER.resolve())
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -68,9 +68,10 @@ def import_images():  # put application's code here
 
             ocr = OCR()
             ocr_output = ocr.get_text(img)
+            print("ocr output:", ocr_output)
 
             mcq_output = mcq(ocr_output)
-            print("MCQ Output:", mcq_output)
+            # print("MCQ Output:", mcq_output)
             return mcq_output
 
     return "Error1"
@@ -123,4 +124,4 @@ def import_images():  # put application's code here
 #
 
 if __name__ == "__main__":
-    app.run(host=0.0.0.0, port=80)
+    app.run(host="0.0.0.0", port=80, processes=3, threaded=False)
