@@ -16,7 +16,7 @@ import speech_recognition as speech_recog
 
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 UPLOAD_FOLDER = Path("./tmp/")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
