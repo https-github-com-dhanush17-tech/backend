@@ -1,8 +1,11 @@
+import shutil
+import os
+from pathlib import Path
+import logging
+
 from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
-import os
 import cv2
-from pathlib import Path
 import numpy as np
 from flask import Flask
 
@@ -17,7 +20,7 @@ rec = speech_recog.Recognizer()
 UPLOAD_FOLDER = Path("./tmp/")
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
-# print(UPLOAD_FOLDER.resolve())
+logging.debug(UPLOAD_FOLDER.resolve())
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -28,15 +31,6 @@ def hello_world():  # put application's code here
     return "Ur mum"
 
 
-# def allowed_file(filename):
-#     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-#
-#
-# @app.route("/importImages", methods=["POST"])
-# def allowed_file2(filename):
-#     return '.' in filename and \
-#            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS2
-
 @app.route('/importImages', methods=['POST'])
 def import_images():  # put application's code here
     if request.method == "POST":
@@ -45,8 +39,7 @@ def import_images():  # put application's code here
             flash("No file part")
             return redirect(request.url)
         file = request.files["file"]
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
+        # If the user does not select a file, the browser submits an empty file without a filename.
         if file.filename == "":
             flash("No selected file")
             return redirect(request.url)
@@ -57,21 +50,15 @@ def import_images():  # put application's code here
             img = cv2.imread(name)  # Read image
 
             # delete file
-            # UPLOAD_FOLDER.unlink(missing_ok=True)
-
-            # imS = cv2.resize(img, (img.shape[0], img.shape[1]))  # Resize image
-            #
-            # # Create window with freedom of dimensions
-            # cv2.namedWindow("output", cv2.WINDOW_NORMAL)
-            # cv2.imshow("output", imS)
-            # cv2.waitKey(-1)
+            shutil.rmtree(UPLOAD_FOLDER)
 
             ocr = OCR()
             ocr_output = ocr.get_text(img)
-            print("ocr output:", ocr_output)
+            logging.debug("ocr output:", ocr_output)
 
             mcq_output = mcq(ocr_output)
-            # print("MCQ Output:", mcq_output)
+            logging.debug("MCQ Output:", mcq_output)
+
             return mcq_output
 
     return "Error1"
@@ -125,3 +112,4 @@ def import_images():  # put application's code here
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80, processes=3, threaded=False)
+    logging.basicConfig(level=logging.INFO)

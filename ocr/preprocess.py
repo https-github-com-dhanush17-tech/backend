@@ -1,12 +1,12 @@
 from pathlib import Path
+import logging
 
 import cv2
-import pytesseract
 import numpy as np
 
 
 class PreprocessImage:
-    def __init__(self, img, res_scale=0.25):
+    def __init__(self, img, res_scale=1):
         self.org_img = img.copy()
 
         res = (
@@ -17,6 +17,8 @@ class PreprocessImage:
         self.res_scale = res_scale
         self.res = res
         self.img = cv2.resize(img, self.res)
+
+        logging.info(f"Image original shape: {self.org_img.shape}; new shape: {self.img.shape}")
 
     def preprocess_img(self):
         img = self.img
@@ -49,7 +51,6 @@ class PreprocessImage:
             canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
         contours = self.filter_contours_area(contours, 9000)
-        # rectangles = self.filter_contours_closed(contours, hierarchy)
         rectangles = self.get_contours_of_shape(contours, 4)
 
         if len(rectangles) != 0:
@@ -60,51 +61,9 @@ class PreprocessImage:
 
             dewarped = self.unwarp_rect(self.org_img, rectangle)
             print("rectangle:", rectangle)
-            # cv2.imshow("dwarmped", dewarped)
             return self.process_for_ocr(dewarped)
         else:
             return self.process_for_ocr(self.org_img)
-
-        drawing = self.img.copy()
-        cv2.drawContours(drawing, contours, -1, (0, 255, 0), 1)
-
-        if len(rectangles) != 0:
-            cv2.drawContours(drawing, [rectangle], 0, (255, 0, 0), 3)
-
-        # Hough Lines
-        # from https://stackoverflow.com/a/45560545
-        rho = 1  # distance resolution in pixels of the Hough grid
-        theta = np.pi / 180  # angular resolution in radians of the Hough grid
-        threshold = 1  # minimum number of votes (intersections in Hough grid cell)
-        min_line_length = 100  # minimum number of pixels making up a line
-        max_line_gap = 20  # maximum gap in pixels between connectable line segments
-        line_image = np.copy(img) * 0  # creating a blank to draw lines on
-
-        # Run Hough on edge detected image
-        # Output "lines" is an array containing endpoints of detected line segments
-        lines = cv2.HoughLinesP(
-            canny, rho, theta, threshold, np.array([]), min_line_length, max_line_gap
-        )
-
-        if lines is not None:
-            for line in lines:
-                for x1, y1, x2, y2 in line:
-                    cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 5)
-
-        drawing = cv2.addWeighted(drawing, 0.8, line_image, 1, 0)
-
-        # gray = self.process_color(self.img)
-        # denoised = self.denoise(gray)
-        # _, thresh = self.threshold(denoised)
-        # opened = self.opening(thresh)
-        # canny = self.canny(opened)
-
-        # cv2.imshow("blurred", blurred)
-        # cv2.imshow("smoothed", smoothed)
-        # cv2.imshow("thresh", thresh)
-        # cv2.imshow("canny", canny)
-
-        return drawing
 
     def process_for_ocr(self, img):
         cv2.normalize(img, img, 0, 255, cv2.NORM_MINMAX)
@@ -182,7 +141,6 @@ class PreprocessImage:
         return filtered
 
     def detect_shape(self, contour, num_sides):
-        """Returns True if shape with provided number of sides is detected with supplied closed contour and is convex, False otherwise."""
         # must be closed contour
         perimeter = cv2.arcLength(contour, True)
         approx = cv2.approxPolyDP(contour, 0.10 * perimeter, True)
@@ -203,16 +161,6 @@ class PreprocessImage:
     def get_largest_contour(self, contours):
         areas = [cv2.contourArea(contour) for contour in contours]
         return contours[np.argmax(areas)]
-
-    def filter_contours_closed(self, contours, hierarchy):
-        # TODO need to fix to make this work
-        filtered = []
-        for contour, h in zip(contours, hierarchy):
-            print(h)
-            if cv2.isContourConvex(contour) and h[2] != -1:
-                filtered.append(contour)
-
-        return filtered
 
     def sort_rect_points(self, points_new):
         points_old = np.array(points_new).reshape(4, 2)

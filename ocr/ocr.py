@@ -1,5 +1,5 @@
-# TODO use confidence for each word/letter if possible
 from pathlib import Path
+import logging
 
 import cv2
 import pytesseract
@@ -16,19 +16,18 @@ class OCR:
         self.spell_cleanup = Speller(only_replacements=False)
 
     def get_text(self, img):
+        logging.info("Preprocessing Image")
         preprocessImage = PreprocessImage(img)
         processed_img = preprocessImage.preprocess_img()
 
-        ocr_output = pytesseract.image_to_string(
-            processed_img, config=self.tesseract_config
-        )
-
+        logging.info("Running OCR on Image")
         ocr_data = pytesseract.image_to_data(
             processed_img,
             config=self.tesseract_config,
             output_type=pytesseract.Output.DICT,
         )
 
+        logging.info("Running Clean-up on OCR")
         ocr_conf_output = ""
         for conf, word in zip(ocr_data["conf"], ocr_data["text"]):
             if int(conf) >= self.conf_thresh * 100:
