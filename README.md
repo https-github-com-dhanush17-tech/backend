@@ -1,5 +1,7 @@
 # backend
 
+Author: [Ani Aggarwal](www.github.com/AniAggarwal)
+
 # Installation
 ```
 sudo apt update

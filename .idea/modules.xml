@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/backend.iml" filepath="$PROJECT_DIR$/.idea/backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../frc/2021-unified/experimental/individual/ani/vision/experimental/.idea/experimental.iml" filepath="$PROJECT_DIR$/../../../frc/2021-unified/experimental/individual/ani/vision/experimental/.idea/experimental.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../automation-club/pinball-backend/.idea/pinball-backend.iml" filepath="$PROJECT_DIR$/../../automation-club/pinball-backend/.idea/pinball-backend.iml" />
     </modules>
   </component>
 </project>
